@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/joho/godotenv"
+	"golang.org/x/crypto/bcrypt"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -27,4 +28,16 @@ func CheckRequiredEnvs() {
 			log.Panic(fmt.Sprintf("Error: Environment variable %v is not set.", envVar))
 		}
 	}
+}
+
+func HashPassword(password string) (string, error) {
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+
+	return string(hashedPassword), err
+}
+
+func CheckPassword(password string, hashedPassword string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
+
+	return err == nil
 }

@@ -4,20 +4,13 @@ import (
 	"database/sql"
 
 	"github.com/gin-gonic/gin"
-	"github.com/redis/go-redis/v9"
 
-	"exampleApi/api/auth"
+	"registration-service/api/registration"
 )
 
-func Handlers(r *gin.Engine, db *sql.DB, redisDb *redis.Client) {
+func Handlers(r *gin.Engine, db *sql.DB) {
 
-	InitMiddlewares(r, db, redisDb)
+	InitMiddlewares(r, db)
 
-	r.POST("/auth/signIn", auth.SignIn)
-	r.POST("/auth/signUp", auth.SignUp)
-	r.POST("/auth/refresh", auth.Refresh)
-	r.DELETE("/auth/signOut", authMiddleware, auth.SignOut)
-	r.DELETE("/auth/signOutAll", authMiddleware, auth.SignOutFromAllDevices)
-
-	r.GET("/auth/accessTokenSecret", auth.GetAccessTokenSecret)
+	r.POST("/registration/signUp", registration.SignUp)
 }

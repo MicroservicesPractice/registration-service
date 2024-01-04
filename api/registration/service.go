@@ -1,4 +1,4 @@
-package auth
+package registration
 
 import (
 	"database/sql"
@@ -7,20 +7,6 @@ import (
 )
 
 type UserService struct {
-}
-
-func (u *UserService) GetUserPassword(c *gin.Context, user *User) (User, error) {
-	result := User{}
-
-	db := c.MustGet("db").(*sql.DB)
-
-	sqlStatement := `SELECT password, id
-	FROM users
-	WHERE users.email=$1;`
-
-	err := db.QueryRow(sqlStatement, user.Email).Scan(&result.Password, &result.ID)
-
-	return result, err
 }
 
 func (u *UserService) CreateUser(c *gin.Context, user *User) error {

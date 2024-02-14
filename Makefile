@@ -26,3 +26,13 @@ migrateup: # migrate postgresql up
 .PHONY: migrate postgresql down
 migratedown: # migrate postgresql down
 	migrate -path ./db/migrations -database "postgresql://$(DB_USER):$(DB_PASSWORD)@$(DB_HOST):$(DB_PORT)/$(DB_NAME)?sslmode=disable" down
+
+.PHONY: protoGen
+protoGen: # Generating client and server code (.pb which contains all the protocol buffer code to populate, serialize, and retrieve request and response message types; _grpc.pb An interface type for clients and servers)
+	protoc -I ../user-service/proto --go_out=./app/proto --go_opt=paths=source_relative \
+    --go-grpc_out=./app/proto --go-grpc_opt=paths=source_relative \
+    ../user-service/proto/user.proto
+
+.PHONY: goModule
+goModule: # change GO111MODULE env 
+	go env -w GO111MODULE=on

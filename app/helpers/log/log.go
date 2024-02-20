@@ -43,3 +43,22 @@ func HttpLog(c *gin.Context, level LogLevel, httpStatus int, message string) {
 		log.WithFields(fields).Info(message)
 	}
 }
+
+func GrpcLog(level LogLevel, service string, message string) {
+	fields := log.Fields{
+		"service": service,
+	}
+
+	switch level {
+	case Panic:
+		log.WithFields(fields).Panic(message)
+	case Error:
+		log.WithFields(fields).Error(message)
+	case Warn:
+		log.WithFields(fields).Warn(message)
+	case Info:
+		log.WithFields(fields).Info(message)
+	default:
+		log.WithFields(fields).Info(message)
+	}
+}

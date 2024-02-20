@@ -4,7 +4,7 @@
 // - protoc             v4.25.2
 // source: user.proto
 
-package proto
+package user
 
 import (
 	context "context"
@@ -36,7 +36,7 @@ func NewUserClient(cc grpc.ClientConnInterface) UserClient {
 
 func (c *userClient) CreateUser(ctx context.Context, in *CreateUserRequest, opts ...grpc.CallOption) (*CreateUserResponse, error) {
 	out := new(CreateUserResponse)
-	err := c.cc.Invoke(ctx, "/proto.User/CreateUser", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/user.User/CreateUser", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -45,7 +45,7 @@ func (c *userClient) CreateUser(ctx context.Context, in *CreateUserRequest, opts
 
 func (c *userClient) GetUserPassword(ctx context.Context, in *GetUserPasswordRequest, opts ...grpc.CallOption) (*GetUserPasswordResponse, error) {
 	out := new(GetUserPasswordResponse)
-	err := c.cc.Invoke(ctx, "/proto.User/GetUserPassword", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/user.User/GetUserPassword", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -94,7 +94,7 @@ func _User_CreateUser_Handler(srv interface{}, ctx context.Context, dec func(int
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/proto.User/CreateUser",
+		FullMethod: "/user.User/CreateUser",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(UserServer).CreateUser(ctx, req.(*CreateUserRequest))
@@ -112,7 +112,7 @@ func _User_GetUserPassword_Handler(srv interface{}, ctx context.Context, dec fun
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/proto.User/GetUserPassword",
+		FullMethod: "/user.User/GetUserPassword",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(UserServer).GetUserPassword(ctx, req.(*GetUserPasswordRequest))
@@ -124,7 +124,7 @@ func _User_GetUserPassword_Handler(srv interface{}, ctx context.Context, dec fun
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var User_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "proto.User",
+	ServiceName: "user.User",
 	HandlerType: (*UserServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{

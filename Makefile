@@ -29,8 +29,8 @@ migratedown: # migrate postgresql down
 
 .PHONY: protoGen
 protoGen: # Generating client and server code (.pb which contains all the protocol buffer code to populate, serialize, and retrieve request and response message types; _grpc.pb An interface type for clients and servers)
-	protoc -I ../user-service/proto --go_out=./app/proto --go_opt=paths=source_relative \
-    --go-grpc_out=./app/proto --go-grpc_opt=paths=source_relative \
+	protoc -I ../user-service/proto --go_out=./app/services/grpc\
+    --go-grpc_out=./app/services/grpc \
     ../user-service/proto/user.proto
 
 .PHONY: goModule

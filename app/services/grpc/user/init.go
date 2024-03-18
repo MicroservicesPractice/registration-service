@@ -1,13 +1,18 @@
 package user
 
 import (
+	"fmt"
+	"registration-service/app/helpers"
 	"registration-service/app/helpers/log"
 
 	"google.golang.org/grpc"
 )
 
+var USER_SERVICE_HOST = helpers.GetEnv("USER_SERVICE_HOST")
+var USER_SERVICE_GRPC_PORT = helpers.GetEnv("USER_SERVICE_GRPC_PORT")
+
 func ConnectUserServiceGrpc() UserClient {
-	conn, err := grpc.Dial("localhost:6003", grpc.WithInsecure())
+	conn, err := grpc.Dial(fmt.Sprintf("%v:%v", USER_SERVICE_HOST, USER_SERVICE_GRPC_PORT), grpc.WithInsecure())
 	if err != nil {
 		log.GrpcLog(log.Error, "user-service", "can't connect to grpc service")
 	}

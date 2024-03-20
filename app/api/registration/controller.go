@@ -5,12 +5,14 @@ import (
 	"fmt"
 	"net/http"
 
+	grpcApi "github.com/MicroservicesPractice/grpc-api/generated/user"
+
 	"github.com/gin-gonic/gin"
 
+	"registration-service/app/config/initializers"
 	"registration-service/app/consts"
 	"registration-service/app/helpers"
 	"registration-service/app/helpers/log"
-	userGrpc "registration-service/app/services/grpc/user"
 )
 
 func SignUp(c *gin.Context) {
@@ -38,9 +40,9 @@ func SignUp(c *gin.Context) {
 
 	user.Password = password
 
-	grpcClient := userGrpc.ConnectUserServiceGrpc()
+	grpcClient := initializers.ConnectUserServiceGrpc()
 
-	createUserReq := &userGrpc.CreateUserRequest{
+	createUserReq := &grpcApi.CreateUserRequest{
 		Email:       user.Email,
 		Password:    user.Password,
 		Nickname:    user.Nickname,

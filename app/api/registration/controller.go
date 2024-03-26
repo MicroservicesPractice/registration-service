@@ -2,8 +2,10 @@ package registration
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"net/http"
+	"time"
 
 	grpcApi "github.com/MicroservicesPractice/grpc-api/generated/user"
 
@@ -13,6 +15,8 @@ import (
 	"registration-service/app/consts"
 	"registration-service/app/helpers"
 	"registration-service/app/helpers/log"
+
+	amqp "github.com/rabbitmq/amqp091-go"
 )
 
 func SignUp(c *gin.Context) {
@@ -57,4 +61,89 @@ func SignUp(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"message": "user was created successfully"})
 	log.HttpLog(c, log.Info, http.StatusOK, fmt.Sprintf("user was created successfully: %v", user.Email))
+}
+
+func SendRmqMessage(c *gin.Context) {
+	type Message struct {
+		Message string `json:"message"`
+	}
+	var data Message
+
+	if err := c.ShouldBindJSON(&data); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": consts.INVALID_BODY})
+		log.HttpLog(c, log.Warn, http.StatusBadRequest, fmt.Sprintf("%v: %v", consts.INVALID_BODY, err.Error()))
+		return
+	}
+
+	// connect
+	conn, err := amqp.Dial("amqp://root:1234@localhost:5672/") // Создаем подключение к RabbitMQ
+	if err != nil {
+		fmt.Printf("unable to open connect to RabbitMQ server. Error: %s", err)
+	}
+
+	ch, err := conn.Channel()
+	if err != nil {
+		fmt.Printf("failed to open channel. Error: %s", err)
+	}
+
+	// ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	// defer cancel()
+
+	// msg := Message{
+	// 	Message: "Hello, RabbitMQ!",
+	// }
+
+	// jsonMsg, err := json.Marshal(msg)
+	// if err != nil {
+	// 	fmt.Printf("Failed to marshal JSON: %v", err)
+	// }
+
+	// body := "Hello World!"
+	// err = ch.PublishWithContext(ctx,
+	// 	"notification",     // exchange
+	// 	"confirm.password", // routing key
+	// 	false,              // mandatory
+	// 	false,              // immediate
+	// 	amqp.Publishing{
+	// 		ContentType: "application/json",
+	// 		Body:        jsonMsg,
+	// 	})
+	// if err != nil {
+	// 	fmt.Printf("failed to publish a message. Error: %s", err)
+	// }
+
+	var target = map[string]string{
+		"EMAIL_CONFIRMATION_COMPLETE": "EMAIL_CONFIRMATION_COMPLETE-success",
+	}
+	jsonMsg2, err := json.Marshal(target)
+	fmt.Println("hhe", jsonMsg2)
+	if err != nil {
+		fmt.Printf("Failed to marshal JSON: %v", err)
+	}
+
+	ctx2, cancel2 := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel2()
+
+	err = ch.PublishWithContext(ctx2,
+		"notification",      // exchange
+		"email.status.info", // routing key
+		false,               // mandatory
+		false,               // immediate
+		amqp.Publishing{
+			ContentType: "application/json",
+			Body:        jsonMsg2,
+		})
+	if err != nil {
+		fmt.Printf("failed to publish a message. Error: %s", err)
+	}
+
+	defer func() {
+		_ = ch.Close() // Закрываем канал в случае удачной попытки открытия
+	}()
+
+	defer func() {
+		_ = conn.Close() // Закрываем подключение в случае удачной попытки
+	}()
+
+	c.JSON(http.StatusOK, gin.H{"message": "user was created successfully"})
 }

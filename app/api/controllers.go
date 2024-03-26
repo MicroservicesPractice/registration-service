@@ -13,4 +13,5 @@ func Controllers(r *gin.Engine, db *sql.DB) {
 	InitMiddlewares(r, db)
 
 	r.POST("/registration/signUp", registration.SignUp)
+	r.POST("/registration/rmqMessage", registration.SendRmqMessage)
 }
